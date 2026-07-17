@@ -120,6 +120,15 @@ zm.edu.justinkabwe.jkmarketbridge
 
 ---
 
+## Author
+
+**Martin Chirwa** — Grade 11, Justin Kabwe Secondary School, Mandevu, Lusaka, Zambia
+
+98th Agricultural and Commercial Show — Design and Technology Competition
+Category: ICT and Smart Technologies | Theme: Fostering Trade and Investment | July 2026
+
+---
+
 ## License
 
-This project is a prototype built for educational purposes at the University of Zambia (Justin Kabwe).
+This project was built for the 98th ACSZ Agricultural and Commercial Show Design and Technology Competition by a Grade 11 learner at Justin Kabwe Secondary School, Lusaka. Free to use for educational purposes.
