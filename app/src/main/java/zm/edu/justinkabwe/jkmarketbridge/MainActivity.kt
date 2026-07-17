@@ -27,6 +27,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -243,12 +244,21 @@ fun MarketplaceScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.jk_marketbridge_logo_emblem),
-                    contentDescription = stringResource(id = R.string.logo_content_description),
-                    modifier = Modifier.size(40.dp),
-                    contentScale = ContentScale.Fit
-                )
+                // Circular container blends emblem cleanly on any header colour
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.12f),
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.jk_marketbridge_logo_emblem),
+                        contentDescription = stringResource(id = R.string.logo_content_description),
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Fit
+                    )
+                }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
