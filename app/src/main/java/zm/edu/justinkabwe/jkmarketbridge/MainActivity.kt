@@ -4,12 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -54,7 +58,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.Image
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,6 +65,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -230,7 +234,7 @@ fun MarketplaceScreen(
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        // Header banner
+        // ── Enterprise header banner ──────────────────────────────────────────
         Surface(
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.fillMaxWidth()
@@ -256,13 +260,13 @@ fun MarketplaceScreen(
                     Text(
                         text = "Local trade. Trusted connections.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.85f)
+                        color = Color.White.copy(alpha = 0.80f)
                     )
                 }
             }
         }
 
-        // Search bar
+        // ── Search bar ───────────────────────────────────────────────────────
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -275,7 +279,7 @@ fun MarketplaceScreen(
             shape = RoundedCornerShape(12.dp)
         )
 
-        // Category filter chips
+        // ── Category filter chips ─────────────────────────────────────────────
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -292,7 +296,7 @@ fun MarketplaceScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Product list
+        // ── Product list ──────────────────────────────────────────────────────
         if (filtered.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
@@ -315,6 +319,60 @@ fun MarketplaceScreen(
     }
 }
 
+// ── CategoryBadge ─────────────────────────────────────────────────────────────
+
+@Composable
+fun CategoryBadge(category: String) {
+    val (bgColor, fgColor) = when (category) {
+        "Vegetables" -> Color(0xFFDCFCE7) to Color(0xFF166534)
+        "Grains"     -> Color(0xFFFEF3C7) to Color(0xFF92400E)
+        "Nuts"       -> Color(0xFFFED7AA) to Color(0xFF9A3412)
+        "Textiles"   -> Color(0xFFEDE9FE) to Color(0xFF5B21B6)
+        "Poultry"    -> Color(0xFFDBEAFE) to Color(0xFF1E40AF)
+        else         -> Color(0xFFF3F4F6) to Color(0xFF374151)
+    }
+    Surface(color = bgColor, shape = RoundedCornerShape(4.dp)) {
+        Text(
+            text = category,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = fgColor,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+// ── VerifiedBadge ─────────────────────────────────────────────────────────────
+
+@Composable
+fun VerifiedBadge() {
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        shape = RoundedCornerShape(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = "Verified",
+                modifier = Modifier.size(12.dp),
+                tint = MaterialTheme.colorScheme.secondary
+            )
+            Spacer(modifier = Modifier.width(2.dp))
+            Text(
+                text = "Verified",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
+// ── ProductCard ───────────────────────────────────────────────────────────────
+
 @Composable
 fun ProductCard(product: Product, onClick: () -> Unit) {
     ElevatedCard(
@@ -323,6 +381,7 @@ fun ProductCard(product: Product, onClick: () -> Unit) {
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Name + Verified badge
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -342,53 +401,46 @@ fun ProductCard(product: Product, onClick: () -> Unit) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
-            Text(
-                text = product.price,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
+            // Category badge + Price (amber)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CategoryBadge(product.category)
+                Text(
+                    text = product.price,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+            Spacer(modifier = Modifier.height(10.dp))
 
             InfoRow(label = "Trader", value = product.trader)
             InfoRow(label = "Market", value = "${product.market} · ${product.stall}")
-            InfoRow(label = "Stock", value = product.quantity, valueColor = MaterialTheme.colorScheme.secondary)
-        }
-    }
-}
-
-@Composable
-fun VerifiedBadge() {
-    Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
-        shape = RoundedCornerShape(4.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "Verified",
-                modifier = Modifier.size(12.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.width(2.dp))
-            Text(
-                text = "Verified",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.SemiBold
+            InfoRow(
+                label = "Stock",
+                value = product.quantity,
+                valueColor = MaterialTheme.colorScheme.secondary
             )
         }
     }
 }
 
+// ── InfoRow ───────────────────────────────────────────────────────────────────
+
 @Composable
-fun InfoRow(label: String, value: String, valueColor: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
+fun InfoRow(
+    label: String,
+    value: String,
+    valueColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "$label: ",
@@ -405,6 +457,8 @@ fun InfoRow(label: String, value: String, valueColor: Color = MaterialTheme.colo
         )
     }
 }
+
+// ── ProductDetailDialog ───────────────────────────────────────────────────────
 
 @Composable
 fun ProductDetailDialog(
@@ -431,7 +485,7 @@ fun ProductDetailDialog(
                 if (product.isVerified) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Surface(
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Row(
@@ -441,14 +495,14 @@ fun ProductDetailDialog(
                             Icon(
                                 Icons.Filled.Star,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
+                                tint = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 "This trader is verified and trusted.",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.secondary
                             )
                         }
                     }
@@ -463,6 +517,8 @@ fun ProductDetailDialog(
         }
     )
 }
+
+// ── DetailItem ────────────────────────────────────────────────────────────────
 
 @Composable
 fun DetailItem(label: String, value: String) {
@@ -481,6 +537,8 @@ fun DetailItem(label: String, value: String) {
     }
 }
 
+// ── ReserveDialog ─────────────────────────────────────────────────────────────
+
 @Composable
 fun ReserveDialog(product: Product, code: String, onDismiss: () -> Unit) {
     AlertDialog(
@@ -494,14 +552,14 @@ fun ReserveDialog(product: Product, code: String, onDismiss: () -> Unit) {
             ) {
                 Surface(
                     shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primaryContainer,
+                    color = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier.size(64.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             Icons.Filled.Check,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.size(36.dp)
                         )
                     }
@@ -510,7 +568,7 @@ fun ReserveDialog(product: Product, code: String, onDismiss: () -> Unit) {
                     text = "Your collection code for\n${product.name}:",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
                 Text(
                     text = code,
@@ -523,7 +581,7 @@ fun ReserveDialog(product: Product, code: String, onDismiss: () -> Unit) {
                     text = "Show this code at ${product.stall}, ${product.market}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
             }
         },
@@ -666,25 +724,67 @@ fun BuyerRequestsScreen(
     }
 }
 
+// ── BuyerRequestCard ──────────────────────────────────────────────────────────
+
 @Composable
 fun BuyerRequestCard(request: BuyerRequest) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = request.product,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+        ) {
+            // Left accent bar (verified-green)
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.secondary)
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            RequestDetailRow("Quantity", request.quantity)
-            RequestDetailRow("Location", request.location)
-            RequestDetailRow("Budget", request.maxBudget, isHighlight = true)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = request.product,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    // Status badge
+                    Surface(
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = "OPEN",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                RequestDetailRow("Quantity", request.quantity)
+                RequestDetailRow("Location", request.location)
+                RequestDetailRow("Budget", request.maxBudget, isHighlight = true)
+            }
         }
     }
 }
+
+// ── RequestDetailRow ──────────────────────────────────────────────────────────
 
 @Composable
 fun RequestDetailRow(label: String, value: String, isHighlight: Boolean = false) {
@@ -698,10 +798,25 @@ fun RequestDetailRow(label: String, value: String, isHighlight: Boolean = false)
         Text(
             text = value,
             style = MaterialTheme.typography.bodySmall,
-            color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            color = if (isHighlight) MaterialTheme.colorScheme.tertiary
+                    else MaterialTheme.colorScheme.onSurface,
             fontWeight = if (isHighlight) FontWeight.SemiBold else FontWeight.Normal
         )
     }
+}
+
+// ── SectionHeader ─────────────────────────────────────────────────────────────
+
+@Composable
+fun SectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 0.8.sp,
+        modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
+    )
 }
 
 // ── Add Product Screen ────────────────────────────────────────────────────────
@@ -731,7 +846,7 @@ fun AddProductScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Surface(
                         shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                         modifier = Modifier
                             .size(56.dp)
                             .align(Alignment.CenterHorizontally)
@@ -740,7 +855,7 @@ fun AddProductScreen(
                             Icon(
                                 Icons.Filled.Check,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
+                                tint = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier.size(32.dp)
                             )
                         }
@@ -763,7 +878,7 @@ fun AddProductScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
             text = "Add New Product",
@@ -775,6 +890,11 @@ fun AddProductScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+        // ── Product Information ───────────────────────────────────────────────
+        SectionHeader("PRODUCT INFORMATION")
 
         OutlinedTextField(
             value = name,
@@ -818,6 +938,9 @@ fun AddProductScreen(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
+
+        // ── Market & Location ─────────────────────────────────────────────────
+        SectionHeader("MARKET & LOCATION")
 
         OutlinedTextField(
             value = trader,
@@ -902,63 +1025,102 @@ fun TraderProfileScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Profile header card
+        // ── Profile header card (navy header + stats row) ─────────────────────
         ElevatedCard(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            // Navy header strip
+            Surface(
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Surface(
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    modifier = Modifier.size(88.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            Icons.Filled.Person,
-                            contentDescription = null,
-                            modifier = Modifier.size(52.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.White.copy(alpha = 0.15f),
+                        modifier = Modifier.size(88.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Filled.Person,
+                                contentDescription = null,
+                                modifier = Modifier.size(52.dp),
+                                tint = Color.White
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "Alice Banda",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Verified pill
+                    Surface(
+                        color = Color.White.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = Color(0xFF4ADE80),
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Text(
+                                "Verified Trader",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
+            }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = "Alice Banda",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+            // Stats row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                StatItem("$productCount", "Products")
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(32.dp)
+                        .background(MaterialTheme.colorScheme.outline)
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        Icons.Filled.Star,
-                        contentDescription = null,
-                        tint = Color(0xFFF9A825),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        text = "Verified Trader",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+                StatItem("4.8 ★", "Rating")
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(32.dp)
+                        .background(MaterialTheme.colorScheme.outline)
+                )
+                StatItem("2023", "Since")
             }
         }
 
-        // Profile details card
+        // ── Trader details card ───────────────────────────────────────────────
         ElevatedCard(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp)
@@ -976,19 +1138,15 @@ fun TraderProfileScreen(
                 ProfileDetailRow("Phone", "+260 97X XXX XXXX")
                 ProfileDetailRow("Market", "Soweto Market")
                 ProfileDetailRow("Primary Stall", "Stall B14")
-                ProfileDetailRow("Products Listed", "$productCount")
                 ProfileDetailRow("Member Since", "January 2023")
-                ProfileDetailRow("Rating", "4.8 / 5.0 ★")
             }
         }
 
-        // Brand identity card
+        // ── Brand identity card ───────────────────────────────────────────────
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
             Column(
@@ -1010,12 +1168,12 @@ fun TraderProfileScreen(
                     text = "Connecting traders and buyers across Zambia's local markets.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
             }
         }
 
-        // Verification explanation card
+        // ── Verification explanation card ─────────────────────────────────────
         ElevatedCard(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
@@ -1031,7 +1189,7 @@ fun TraderProfileScreen(
                     Icon(
                         Icons.Filled.Star,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -1060,6 +1218,27 @@ fun TraderProfileScreen(
     }
 }
 
+// ── StatItem ──────────────────────────────────────────────────────────────────
+
+@Composable
+fun StatItem(value: String, label: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+// ── ProfileDetailRow ──────────────────────────────────────────────────────────
+
 @Composable
 fun ProfileDetailRow(label: String, value: String) {
     Column {
@@ -1083,8 +1262,3 @@ fun ProfileDetailRow(label: String, value: String) {
         HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
     }
 }
-
-
-
-
-
