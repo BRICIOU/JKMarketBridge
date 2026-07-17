@@ -54,9 +54,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.Image
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -231,18 +235,30 @@ fun MarketplaceScreen(
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-                Text(
-                    text = "JK MarketBridge",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.jk_marketbridge_logo_emblem),
+                    contentDescription = stringResource(id = R.string.logo_content_description),
+                    modifier = Modifier.size(40.dp),
+                    contentScale = ContentScale.Fit
                 )
-                Text(
-                    text = "Local trade. Trusted connections.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.85f)
-                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = "JK MarketBridge",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "Local trade. Trusted connections.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.85f)
+                    )
+                }
             }
         }
 
@@ -966,6 +982,39 @@ fun TraderProfileScreen(
             }
         }
 
+        // Brand identity card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.jk_marketbridge_logo),
+                    contentDescription = stringResource(id = R.string.logo_content_description),
+                    modifier = Modifier
+                        .fillMaxWidth(0.7f)
+                        .height(120.dp),
+                    contentScale = ContentScale.Fit
+                )
+                Text(
+                    text = "Connecting traders and buyers across Zambia's local markets.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
+        }
+
         // Verification explanation card
         ElevatedCard(
             modifier = Modifier.fillMaxWidth(),
@@ -1034,3 +1083,8 @@ fun ProfileDetailRow(label: String, value: String) {
         HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
     }
 }
+
+
+
+
+
