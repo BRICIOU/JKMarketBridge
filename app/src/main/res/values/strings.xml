@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">JKMarketBridge</string>
+    <string name="app_name">JK MarketBridge</string>
+    <string name="logo_content_description">JK MarketBridge logo</string>
 </resources>
